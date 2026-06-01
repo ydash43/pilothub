@@ -1,18 +1,19 @@
 "use client";
-import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navItems = [
-  { icon: "◻", label: "Vue d'ensemble", active: true },
-  { icon: "📦", label: "Commandes", active: false },
-  { icon: "🏷", label: "Produits & Stock", active: false },
-  { icon: "📢", label: "Publicités", active: false },
-  { icon: "✅", label: "Tâches", active: false },
-  { icon: "👁", label: "Veille", active: false },
-  { icon: "🤖", label: "Rapports IA", active: false },
+  { icon: "◻", label: "Vue d'ensemble", href: "/" },
+  { icon: "📦", label: "Commandes", href: "/commandes" },
+  { icon: "🏷", label: "Produits & Stock", href: "/produits" },
+  { icon: "📢", label: "Publicités", href: "/publicites" },
+  { icon: "✅", label: "Tâches", href: "/taches" },
+  { icon: "👁", label: "Veille", href: "/veille" },
+  { icon: "🤖", label: "Rapports IA", href: "/rapports" },
 ];
 
 export default function Sidebar() {
-  const [active, setActive] = useState("Vue d'ensemble");
+  const pathname = usePathname();
 
   return (
     <aside className="fixed top-0 left-0 h-screen w-56 bg-[#16181c] border-r border-white/10 flex flex-col py-6">
@@ -24,18 +25,18 @@ export default function Sidebar() {
 
       <nav className="flex-1 px-3">
         {navItems.map((item) => (
-          <button
+          <Link
             key={item.label}
-            onClick={() => setActive(item.label)}
+            href={item.href}
             className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm mb-1 transition-all ${
-              active === item.label
+              pathname === item.href
                 ? "bg-purple-600/20 text-purple-400"
                 : "text-gray-400 hover:bg-white/5 hover:text-white"
             }`}
           >
             <span className="w-4 text-center">{item.icon}</span>
             {item.label}
-          </button>
+          </Link>
         ))}
       </nav>
 
