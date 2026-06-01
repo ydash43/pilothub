@@ -1,3 +1,4 @@
+"use client";
 import Sidebar from "./components/Sidebar";
 import MetricCard from "./components/MetricCard";
 import SalesChart from "./components/SalesChart";

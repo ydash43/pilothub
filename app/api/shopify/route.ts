@@ -7,27 +7,34 @@ export async function GET() {
   }
 
   try {
-    const [ordersRes, productsRes] = await Promise.all([
-      fetch(`https://${store}/admin/api/2024-01/orders.json?status=any&limit=50`, {
-        headers: { "X-Shopify-Access-Token": token },
+    const response = await fetch(`https://${store}/admin/api/2024-01/graphql.json`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": token,
+      },
+      body: JSON.stringify({
+        query: `{
+          orders(first: 10) {
+            edges {
+              node {
+                id
+                totalPriceSet { shopMoney { amount } }
+                createdAt
+              }
+            }
+          }
+          products(first: 10) {
+            edges {
+              node { id title }
+            }
+          }
+        }`
       }),
-      fetch(`https://${store}/admin/api/2024-01/products.json?limit=50`, {
-        headers: { "X-Shopify-Access-Token": token },
-      }),
-    ]);
-
-    const { orders } = await ordersRes.json();
-    const { products } = await productsRes.json();
-
-    const todaySales = orders
-      .filter((o: any) => new Date(o.created_at).toDateString() === new Date().toDateString())
-      .reduce((sum: number, o: any) => sum + parseFloat(o.total_price), 0);
-
-    return Response.json({
-      todaySales: todaySales.toFixed(2),
-      totalOrders: orders.length,
-      totalProducts: products.length,
     });
+
+    const data = await response.json();
+    return Response.json(data);
 
   } catch {
     return Response.json({ error: "Erreur API Shopify" }, { status: 500 });
